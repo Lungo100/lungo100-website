@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lungo100 - Coming Soon</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .glow {
+      text-shadow:
+        0 0 10px #0f0,
+        0 0 20px #0f0,
+        0 0 40px #0f0,
+        0 0 80px #0f0;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 10vw, 8rem);
+      color: #0f0;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 3vw, 2rem);
+      color: #0f0;
+      margin-top: 1rem;
+      letter-spacing: 0.3em;
+      border-right: 2px solid #0f0;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: blink 0.75s step-end infinite;
+    }
+
+    .subtitle span {
+      animation: none;
+    }
+
+    .tagline {
+      margin-top: 2.5rem;
+      font-size: clamp(0.75rem, 1.5vw, 1rem);
+      color: #0f0;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-shadow:
+        0 0 5px #0f0,
+        0 0 15px #0f0;
+    }
+
+    .status {
+      margin-top: 1rem;
+      font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+      color: #0f0;
+      letter-spacing: 0.15em;
+      text-shadow:
+        0 0 5px #0f0,
+        0 0 15px #0f0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+      );
+    }
+
+    .vignette {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <div class="overlay">
+    <h1 class="glow">Coming Soon</h1>
+    <div class="subtitle">Lungo100</div>
+    <div class="tagline">something awesome is loading...</div>
+    <div class="status">[ system online // status: initializing ]</div>
+  </div>
+
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <script>
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+
+    let cols, rows, drops;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      cols = Math.floor(canvas.width / 30);
+      drops = Array.from({ length: cols }, () => Math.floor(Math.random() * -canvas.height / 14));
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const chars = (katakana + latin).split('');
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = '16px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const x = i * 30;
+        const y = drops[i] * 14;
+
+        const isHead = Math.random() > 0.98;
+        const char = chars[Math.floor(Math.random() * chars.length)];
+
+        ctx.fillStyle = isHead ? '#fff' : '#0f0';
+        ctx.shadowBlur = isHead ? 15 : 5;
+        ctx.shadowColor = '#0f0';
+        ctx.fillText(char, x, y);
+
+        ctx.shadowBlur = 0;
+
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        } else {
+          drops[i] += 1;
+        }
+      }
+    }
+
+    setInterval(draw, 45);
+  </script>
+</body>
+</html>
